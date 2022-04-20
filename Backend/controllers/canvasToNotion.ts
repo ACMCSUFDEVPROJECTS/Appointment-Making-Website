@@ -9,13 +9,13 @@ const NAMESPACE = 'CanvasToNotion';
 // investigate why the routes are being weird here
 @Route('assignments')
 export default class Assignments {
-    public async importAssignments(domain: string, canvasToken: string, notionDb: string, notionToken: string, update = false){
+    public async importAssignments(domain: string, canvasToken: string, notionDb: string, notionToken: string, update = false) {
         let courses: any;
 
         let notionClient = new Client({
             auth: notionToken
         });
-        
+
         let canvas = axios.create({
             baseURL: domain + '/api/v1/',
             headers: { Authorization: `Bearer ${canvasToken}` }
@@ -24,10 +24,9 @@ export default class Assignments {
         // get courses and filter out ones from the past
         try {
             let course = await canvas.get('/courses');
-            courses = course.data.map((course: { id: string, name: string, end_at: string }) => {
+            courses = course.data.map((course: { id: string; name: string; end_at: string }) => {
                 // Probably not the best solution?
-                if(Date.parse(course.end_at ?? '01/01/1971') > Date.now())
-                {
+                if (Date.parse(course.end_at ?? '01/01/1971') > Date.now()) {
                     return {
                         [course.id]: course.name
                     };
@@ -42,8 +41,7 @@ export default class Assignments {
         courses = Object.assign({}, ...courses);
 
         // get assignments from the canvas API and extract useful info
-        for (const course in courses)
-        {
+        for (const course in courses) {
             try {
                 let assignment = await canvas.get(`/courses/${course}/assignments`);
 
@@ -66,84 +64,81 @@ export default class Assignments {
 
         // format assignments and upload to notion
         for (const assignment of assignments) {
-            if(update)
-            {
+            if (update) {
                 // basically same code as below but update stuff
                 break;
-            }
-            else
-            {
+            } else {
                 try {
-                await Promise.all(
-                    assignment.map((result: { name: string; course?: string; description?: string; due_date: string; points?: number; link?: string }) => {
-                        notionClient.pages.create({
-                            parent: { database_id: notionDb },
-                            // @ts-ignore
-                            properties: this.formatAssignment(result)
-                        });
-                        logging.info(NAMESPACE, `Completed import of ${result.name}`);
-                    })
-                );
-                }
-                catch (error){
+                    await Promise.all(
+                        assignment.map((result: { name: string; course?: string; description?: string; due_date: string; points?: number; link?: string }) => {
+                            notionClient.pages.create({
+                                parent: { database_id: notionDb },
+                                // @ts-ignore
+                                properties: this.formatAssignment(result)
+                            });
+                            logging.info(NAMESPACE, `Completed import of ${result.name}`);
+                        })
+                    );
+                } catch (error) {
                     logging.error(NAMESPACE, `Assignment ${assignment.name} could not be imported`);
                 }
             }
         }
-    };
+    }
 
     public formatAssignment(assignment: { name: string; course: string; description: string; due_date: string; points: number; link: string }) {
         const { name, course, description, due_date, points, link } = assignment;
-    
+
         return {
             Name: {
-              'title': [
-                {
-                  'text': {
-                    'content': name
-                  }
-                }
-              ]
+                title: [
+                    {
+                        type: 'text',
+                        text: {
+                            content: name
+                        }
+                    }
+                ]
             },
             Class: {
-                'rich_text': [
-                  {
-                    'type': 'text',
-                    'text': {
-                      'content': course,
-                      link: null
+                rich_text: [
+                    {
+                        type: 'text',
+                        text: {
+                            content: course,
+                            link: null
+                        }
                     }
-                  }
                 ]
-              },
-              Description: {
-                'rich_text': [
-                  {
-                    'type': 'text',
-                    'text': {
-                      'content': description,
-                      link: null
+            },
+            Description: {
+                rich_text: [
+                    {
+                        type: 'text',
+                        text: {
+                            content: description,
+                            link: null
+                        }
                     }
-                  }
                 ]
-              },
+            },
             'Due Date': {
-              'date': {
-                'start': new Date(due_date).toISOString() ?? null,
-                'end': null
-              }
+                date: {
+                    start: new Date(due_date).toISOString() ?? null,
+                    end: null
+                }
             },
             Points: {
-              'number': points
+                number: points
             },
             Link: {
-              'url': link
+                url: link
             }
-        }
+        };
     }
 
-    private stripHTML(html: string) : string {
-      var strippedHtml = html ? html.replace(/<[^>]+>/g, '') : html;
-      return strippedHtml ? strippedHtml.replace(/(<([^>]+)>)/gi, '').substring(0, 200) + '...' : html.substring(0, 200) + '...';
+    private stripHTML(html: string): string {
+        var strippedHtml = html ? html.replace(/<[^>]+>/g, '') : html;
+        return strippedHtml ? strippedHtml.replace(/(<([^>]+)>)/gi, '').substring(0, 200) + '...' : html.substring(0, 200) + '...';
     }
 }
