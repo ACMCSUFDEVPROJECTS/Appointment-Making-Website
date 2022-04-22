@@ -1,0 +1,11 @@
+img {
+    width: 110px;
+    height: 110px;
+    vertical-align: middle;
+    float: left;
+}
+
+.h1 {
+    vertical-align: middle;
+    font-size: medium;
+}

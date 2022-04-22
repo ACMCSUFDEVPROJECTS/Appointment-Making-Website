@@ -14,6 +14,8 @@ const app: Application = express();
 app.use(express.json());
 app.use(morgan('tiny'));
 app.use(express.static('public'));
+app.use(express.static('assets'));
+
 app.use(cors());
 
 app.use(

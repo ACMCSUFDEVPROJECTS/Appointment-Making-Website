@@ -30,9 +30,10 @@
   },
   "scripts": {
     "start": "tsc --build && node ./build/app.js",
+    "open": "start http://localhost:8000",
     "predev": "npm run swagger",
     "prebuild": "npm run swagger",
-    "dev": "concurrently \"nodemon\" \"nodemon -x tsoa spec\"",
+    "dev": "npm run open && concurrently \"nodemon\" \"nodemon -x tsoa spec\"",
     "build": "tsc --build",
     "test": "jest",
     "swagger": "tsoa spec"

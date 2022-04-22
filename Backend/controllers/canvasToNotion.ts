@@ -9,8 +9,10 @@ const NAMESPACE = 'CanvasToNotion';
 // investigate why the routes are being weird here
 @Route('assignments')
 export default class Assignments {
-    public async importAssignments(domain: string, canvasToken: string, notionDb: string, notionToken: string, update = false) {
+    public async importAssignments(domain: string, canvasToken: string, 
+        notionDb: string, notionToken: string, update = false) : Promise<string[]> {
         let courses: any;
+        let errors: string[] = [];
 
         let notionClient = new Client({
             auth: notionToken
@@ -34,6 +36,7 @@ export default class Assignments {
             });
         } catch (error) {
             logging.error(NAMESPACE, 'Could not get courses', error);
+            errors.push(`Could not get courses from Canvas`);
         }
 
         let assignments: any = [];
@@ -59,6 +62,7 @@ export default class Assignments {
                 assignments.push(mapped);
             } catch (error) {
                 logging.error(NAMESPACE, `Could not get assignments for class ${course}`);
+                errors.push(`Could not get assignments for class ${courses[course]}`);
             }
         }
 
@@ -81,9 +85,12 @@ export default class Assignments {
                     );
                 } catch (error) {
                     logging.error(NAMESPACE, `Assignment ${assignment.name} could not be imported`);
+                    errors.push(`Could not import ${assignment.name} from ${assignment.course}`);
                 }
             }
         }
+
+        return errors;
     }
 
     public formatAssignment(assignment: { name: string; course: string; description: string; due_date: string; points: number; link: string }) {
