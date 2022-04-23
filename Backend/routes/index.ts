@@ -26,16 +26,16 @@ router.post('/ping', async (req, res) => {
 router.post('/assignments', async (req, res) => {
     let ass = new Assignments();
     let {domain, canvasToken, notionDb, notionToken} = req.body;
-    let errors = await ass.importAssignments(domain, canvasToken, notionDb, notionToken);
+    let errors = await ass.importAssignments({domain, canvasToken, notionDb, notionToken, update: false});
     return res.json({ message: 'Import completed', errors });
 });
 
-// not currently working
-router.patch('/assignments', async (req, res) => {
-    let ass = new Assignments();
-    let {domain, canvasToken, notionDb, notionToken} = req.body;
-    await ass.importAssignments(domain, canvasToken, notionDb, notionToken, true);
-    return res.json({ message: 'Successfully imported all assignments' });
-});
+// // not currently working
+// router.patch('/assignments', async (req, res) => {
+//     let ass = new Assignments();
+//     let {domain, canvasToken, notionDb, notionToken} = req.body;
+//     await ass.importAssignments(domain, canvasToken, notionDb, notionToken, true);
+//     return res.json({ message: 'Successfully imported all assignments' });
+// });
 
 export default router;
