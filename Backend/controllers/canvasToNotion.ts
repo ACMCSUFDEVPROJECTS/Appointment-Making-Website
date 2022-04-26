@@ -19,7 +19,7 @@ interface ImportModel {
 @Route('assignments')
 export default class Assignments {
     @Post('/')
-    public async importAssignments(@Body() params: ImportModel): Promise<string[]> {
+    public async importAssignments(@Body() params: ImportModel) : Promise<string[]> {
         let courses: any;
         let errors: string[] = [];
 
