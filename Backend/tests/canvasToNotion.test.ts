@@ -46,7 +46,7 @@ const sampleResult = {
     },
     'Due Date': {
         date: {
-            start: new Date(sample.due_date).toISOString(),
+            start: sample.due_date,
             end: null
         }
     },
