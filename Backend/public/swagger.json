@@ -44,8 +44,7 @@
 					"canvasToken",
 					"notionDb",
 					"notionToken",
-					"timeZone",
-					"update"
+					"timeZone"
 				],
 				"type": "object",
 				"additionalProperties": false

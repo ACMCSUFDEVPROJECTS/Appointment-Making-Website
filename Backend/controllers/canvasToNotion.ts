@@ -35,25 +35,33 @@ export default class Assignments {
         // get courses and filter out ones from the past
         try {
             let course = await canvas.get('/courses');
-            courses = course.data.map((course: { id: string; name: string; end_at: string }) => {
-                // Probably not the best solution?
-                if (Date.parse(course.end_at ?? '01/01/1971') > Date.now()) {
-                    return {
-                        [course.id]: course.name
-                    };
-                }
-            });
+            if(course != null || course != undefined) {
+                courses = course.data.map((course: { id: string; name: string; end_at: string }) => {
+                    // Probably not the best solution?
+                    if (Date.parse(course.end_at ?? '01/01/1971') > Date.now()) {
+                        return {
+                            [course.id]: course.name
+                        };
+                    }
+                })
+            } else {
+                return errors;
+            };
         } catch (error) {
             logging.error(NAMESPACE, 'Could not get courses', error);
             errors.push(`Could not get courses from Canvas`);
         }
 
+        if(courses == undefined || courses == null) {
+            return errors;
+        }
+
         let assignments: any = [];
         // map class id and name to dictionary
-        courses = Object.assign({}, ...courses);
+        let courseIds: string[] = Object.assign({}, ...courses);
 
         // get assignments from the canvas API and extract useful info
-        for (const course in courses) {
+        for (const course in courseIds) {
             try {
                 let assignment = await canvas.get(`/courses/${course}/assignments`);
 

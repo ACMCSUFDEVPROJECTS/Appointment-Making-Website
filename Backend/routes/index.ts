@@ -27,7 +27,17 @@ router.post('/assignments', async (req, res) => {
     let ass = new Assignments();
     let {domain, canvasToken, notionDb, notionToken, timeZone} = req.body;
     let errors = await ass.importAssignments({domain, canvasToken, notionDb, notionToken, timeZone, update: false});
-    return res.json({ message: 'Import completed', errors });
+    
+    if(errors.length == 1 && errors[0] == "Could not get courses from Canvas"){
+        return res.status(400).json({ message: 'Import could not be completed, invalid Canvas credentials', errors });
+    }
+
+    if(errors.length != 0){
+        return res.json({ message: "Import completed", errors});
+    }
+
+    return res.json({ message: 'Import complete with no errors' });
+    
 });
 
 // // not currently working
