@@ -18,7 +18,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"ImportModel": {
+			"ImportRequest": {
 				"properties": {
 					"domain": {
 						"type": "string"
@@ -133,7 +133,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/ImportModel"
+								"$ref": "#/components/schemas/ImportRequest"
 							}
 						}
 					}

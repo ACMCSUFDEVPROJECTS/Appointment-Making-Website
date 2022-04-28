@@ -6,7 +6,7 @@ import { DateTime } from 'luxon';
 
 const NAMESPACE = 'CanvasToNotion';
 
-interface ImportModel {
+interface ImportRequest {
     domain: string;
     canvasToken: string;
     notionDb: string;
@@ -19,7 +19,7 @@ interface ImportModel {
 @Route('assignments')
 export default class Assignments {
     @Post('/')
-    public async importAssignments(@Body() params: ImportModel) : Promise<string[]> {
+    public async importAssignments(@Body() params: ImportRequest) : Promise<string[]> {
         let courses: any;
         let errors: string[] = [];
 
@@ -43,7 +43,7 @@ export default class Assignments {
                             [course.id]: course.name
                         };
                     }
-                })
+                });
             } else {
                 return errors;
             };
@@ -69,7 +69,7 @@ export default class Assignments {
                     return {
                         id: result.id,
                         name: result.name,
-                        course: courses[course],
+                        course: courseIds[course],
                         description: result.description != null ? this.stripHTML(result.description) : '',
                         due_date: result.due_at == null || result.due_at == undefined
                             ? new Date().toISOString()
@@ -165,6 +165,6 @@ export default class Assignments {
 
     private stripHTML(html: string): string {
         var strippedHtml = html ? html.replace(/<[^>]+>/g, '') : html;
-        return strippedHtml ? strippedHtml.replace(/(<([^>]+)>)/gi, '').substring(0, 200) + '...' : html.substring(0, 200) + '...';
+        return strippedHtml ? strippedHtml.replace(/(<([^>]+)>)/gi, '').substring(0, 200) : html.substring(0, 200);
     }
 }
