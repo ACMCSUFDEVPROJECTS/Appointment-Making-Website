@@ -1,6 +1,7 @@
 import express from 'express';
 import PingController from '../controllers/ping';
 import Assignments from '../controllers/canvasToNotion';
+import Notion from '../controllers/notionAuth';
 import path from 'path';
 
 const NAMESPACE: string = "Router";
@@ -8,6 +9,8 @@ const NAMESPACE: string = "Router";
 const router = express.Router();
 
 const pingController = new PingController();
+
+const notionController = new Notion();
 
 router.get('/', (_req, res) => {
     res.sendFile(path.join(__dirname, '../assets/index.html'));
@@ -38,6 +41,12 @@ router.post('/assignments', async (req, res) => {
 
     return res.json({ message: 'Import complete with no errors' });
     
+});
+
+router.post('/notion', async (req, res) => {
+    let {authorization_code} = req.body;
+    const response = await notionController.exchangeAuthToken({authorization_code});
+    return res.send(response);
 });
 
 // // not currently working
