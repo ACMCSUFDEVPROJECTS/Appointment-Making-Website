@@ -8,11 +8,13 @@ import StepTwoZero from "../../assets/step2.svg";
 import StepTwoOne from "../../assets/step2-1.svg";
 import StepTwoTwo from "../../assets/step2-2.svg";
 import { useEffect } from "react";
+import NotionAuthButton from "./NotionAuth";
 
 interface instructionType {
   id: string;
   label: string;
   image: string[];
+  button?: React.ReactElement;
 }
 
 const squareVariants = {
@@ -23,16 +25,22 @@ const squareVariants = {
 const instructionData: instructionType[] = [
   {
     id: "01",
+    label: "Connect your Notion",
+    image: [],
+    button: <NotionAuthButton/>,
+  },
+  {
+    id: "02",
     label: "Get your Canvas domain",
     image: [StepOne],
   },
   {
-    id: "02",
+    id: "03",
     label: "Get your Canvas API Key",
     image: [StepTwoZero, StepTwoOne, StepTwoTwo],
   },
   {
-    id: "03",
+    id: "04",
     label: "Fill out this form",
     image: [],
   },
@@ -60,6 +68,7 @@ const Instruction: NextPage = () => {
                 </div>
               );
             })}
+            {step.button}
           </>
         );
       })}
